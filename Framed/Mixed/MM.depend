@@ -609,7 +609,7 @@
 1678361064 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Server/src/util.cpp
 	"util.h"
 
-1678365829 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/src/accepter.cpp
+1680171175 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/src/accepter.cpp
 	"accepter.h"
 	"receiver.h"
 	"util.h"
@@ -637,7 +637,7 @@
 	"queue.h"
 	<SFML/Network.hpp>
 
-1678361094 /home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/include/util.h
+1680171346 /home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/include/util.h
 
 1678360919 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/src/list.cpp
 	"list.h"
@@ -645,7 +645,7 @@
 1678360945 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/src/queue.cpp
 	"queue.h"
 
-1678361022 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/src/receiver.cpp
+1680171131 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/src/receiver.cpp
 	"receiver.h"
 	"util.h"
 	<chrono>
@@ -658,7 +658,7 @@
 1678361064 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/src/util.cpp
 	"util.h"
 
-1679573612 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/main.cpp
+1680177362 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/main.cpp
 	"accepter.h"
 	"queue.h"
 	"list.h"
@@ -667,6 +667,7 @@
 	<SFML/Network.hpp>
 	<iostream>
 	<thread>
+	<cstring>
 
 1679571304 source:/home/scm-studs/b1061172/Desktop/Chat Server/Framed/Mixed/src/map.cpp
 	"map.h"
