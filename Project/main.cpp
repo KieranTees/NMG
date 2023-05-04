@@ -41,6 +41,9 @@ struct Car
     }
 };
 
+sf::IpAddress serverIP;
+unsigned short serverPort;
+
 int main()
 {
     // ****************************************
@@ -56,15 +59,18 @@ int main()
     sf::Packet packet;
     packet << "Broadcast Message";
     sf::Socket::Status status = udpSOCKET.send(packet, sf::IpAddress::Broadcast, remotePort);
+
     //Check status
     udpSOCKET.setBlocking(false);
     sf::Clock clock;
     while (clock.getElapsedTime().asMilliseconds() < 1000);
+
     //Receive
     sf::IpAddress sender;
     unsigned short port;
     packet.clear();
     status = udpSOCKET.receive(packet, sender, port);
+
     //If we don't get a response, make a server
     if (status != sf::Socket::Done)
     {
@@ -72,7 +78,19 @@ int main()
         Server server;
         std::thread serverThread(&Server::run, &server);
         serverThread.detach();
+        while (server.getPort() == 0);
     }
+    // If we did get the message from the server
+    else
+    {
+        std::string s;
+        packet >> s;
+        std::cout << s << std::endl;
+        std::cout << "The address of the server is: " << sender << std::endl;
+    }
+    serverIP = sender;
+    serverPort = remotePort;
+
     // start recv thread, queue
     // read from the queue to note which player we are
     RenderWindow app(VideoMode(640, 480), "Car Racing Game!");
@@ -86,7 +104,7 @@ int main()
     sBackground.scale(2,2);
     sCar.setOrigin(22, 22);
     float R=22;
-    const int N=5;
+    const int N=1;
     Car car[N];
     Color colors[5] = {Color::Red, Color::Green, Color::Magenta, Color::Blue, Color::White};
 
@@ -108,6 +126,24 @@ int main()
 
     //Initial checkpoint iterator
     int checkpointIterator = 0;
+
+    //Checkpoints initialisation
+    std::vector<RectangleShape> checkpoints;
+
+    RectangleShape checkpointOne (Vector2f(240.0f, 20.0f));
+    checkpoints.push_back(checkpointOne);
+    RectangleShape checkpointTwo (Vector2f(240.0f, 20.0f));
+    checkpoints.push_back(checkpointTwo);
+    RectangleShape checkpointThree (Vector2f(20.0f, 240.0f));
+    checkpoints.push_back(checkpointThree);
+    RectangleShape checkpointFour (Vector2f(240.0f, 20.0f));
+    checkpoints.push_back(checkpointFour);
+
+
+    for (int i = 0; i < 4; i++)
+    {
+        checkpoints[i].setFillColor(sf::Color::Blue);
+    }
 
     while (app.isOpen())
     {
@@ -181,25 +217,6 @@ int main()
         // Step 3: Render
         app.clear(Color::White);
 
-            //Checkpoints initialisation
-        std::vector<RectangleShape> checkpoints;
-
-        RectangleShape checkpointOne (Vector2f(240.0f, 20.0f));
-        checkpoints.push_back(checkpointOne);
-        RectangleShape checkpointTwo (Vector2f(240.0f, 20.0f));
-        checkpoints.push_back(checkpointTwo);
-        RectangleShape checkpointThree (Vector2f(20.0f, 240.0f));
-        checkpoints.push_back(checkpointThree);
-        RectangleShape checkpointFour (Vector2f(240.0f, 20.0f));
-        checkpoints.push_back(checkpointFour);
-
-        RectangleShape checkpoint (Vector2f(240.0f, 20.0f));
-
-        for (int i = 0; i < 4; i++)
-        {
-            checkpoints[i].setFillColor(sf::Color::Blue);
-        }
-
         // TODO: Stay within the limit of the map.
         //Don't show white screen.
         if (car[0].x>320 && car[0].x<(sBackground.getTextureRect().width * 2) - 320) offsetX = car[0].x-320;
@@ -225,6 +242,9 @@ int main()
             && car[0].y - offsetY >= 520.0f - offsetY && car[0].y - offsetY <= 560.0f - offsetY)
             {
                 checkpointIterator = 1;
+                sf::Packet packet;
+                packet << "Checkpoint 1/4";
+                sf::Socket::Status status = udpSOCKET.send(packet, serverIP, serverPort);
                 std::cout << "Checkpoint 1/4" << std::endl;
             }
         }

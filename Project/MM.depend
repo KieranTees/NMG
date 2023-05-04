@@ -449,3 +449,19 @@
 
 1682595117 /home/scm-studs/b1061172/Desktop/NMG-main/include/Server.h
 
+1683199964 source:/home/scm-studs/b1061172/Desktop/Project/main.cpp
+	<SFML/Graphics.hpp>
+	<SFML/Network.hpp>
+	<cmath>
+	<iostream>
+	<thread>
+	"Server.h"
+
+1683199931 /home/scm-studs/b1061172/Desktop/Project/include/Server.h
+
+1683200000 source:/home/scm-studs/b1061172/Desktop/Project/src/Server.cpp
+	"Server.h"
+	<SFML/Graphics.hpp>
+	<SFML/Network.hpp>
+	<iostream>
+
