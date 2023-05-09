@@ -36,7 +36,6 @@ struct Car
         float ty=points[n][1];
         float beta = angle-atan2(tx-x,-ty+y);
         if (sin(beta)<0) angle+=0.005*speed; else angle-=0.005*speed;
-        // Check if passed a checkpoint
         if ((x-tx)*(x-tx)+(y-ty)*(y-ty)<25*25) n=(n+1)%num; // TODO: simplify
     }
 };
@@ -90,6 +89,12 @@ int main()
     }
     serverIP = sender;
     serverPort = remotePort;
+
+    //Send a message to the server in order to log player
+    sf::Packet connectionPacket;
+    connectionPacket << "Connecting";
+    sf::Socket::Status connectionStatus = udpSOCKET.send(connectionPacket, serverIP, serverPort);
+    connectionPacket.clear();
 
     // start recv thread, queue
     // read from the queue to note which player we are
@@ -187,10 +192,28 @@ int main()
         if (Left && speed!=0)   angle -= turnSpeed * speed/maxSpeed;
         car[0].speed = speed;
         car[0].angle = angle;
-        for(int i=0;i<N;i++) car[i].move(); // We want to move the local player
-        // Use socket to send a message
-        // Dequeue messages
-        // If player then handle ai
+        for(int i=0;i<N;i++)
+        {
+            car[i].move();
+
+            //Sends cars X data to server
+            sf::Packet xPacket;
+            std::string x = "x: ";
+            std::string carX = std::to_string(car[i].x - offsetX);
+            x.append(carX);
+            xPacket << x;
+            sf::Socket::Status xStatus = udpSOCKET.send(xPacket, serverIP, serverPort);
+            xPacket.clear();
+
+            //Sends cars Y data to server
+            sf::Packet yPacket;
+            std::string y = "y: ";
+            std::string carY = std::to_string(car[i].y - offsetY);
+            y.append(carY);
+            yPacket << y;
+            sf::Socket::Status yStatus = udpSOCKET.send(yPacket, serverIP, serverPort);
+            yPacket.clear();
+        }// We want to move the local player
         for(int i=1;i<N;i++) car[i].findTarget();
         //collision
         for(int i=0;i<N;i++)
@@ -235,6 +258,7 @@ int main()
             sCar.setColor(colors[i]);
             app.draw(sCar);
         }
+        sf::Packet checkpointPacket;
         if (checkpointIterator == 0)
         {
             app.draw(checkpoints[0]);
@@ -242,10 +266,10 @@ int main()
             && car[0].y - offsetY >= 520.0f - offsetY && car[0].y - offsetY <= 560.0f - offsetY)
             {
                 checkpointIterator = 1;
-                sf::Packet packet;
-                packet << "Checkpoint 1/4";
-                sf::Socket::Status status = udpSOCKET.send(packet, serverIP, serverPort);
-                std::cout << "Checkpoint 1/4" << std::endl;
+                checkpointPacket << "Checkpoint 1/4";
+                sf::Socket::Status status = udpSOCKET.send(checkpointPacket, serverIP, serverPort);
+                checkpointPacket.clear();
+                //std::cout << "Checkpoint 1/4" << std::endl;
             }
         }
         else if (checkpointIterator == 1)
@@ -255,7 +279,10 @@ int main()
             && car[0].y - offsetY >= 1720.0f - offsetY && car[0].y - offsetY <= 1760.0f - offsetY)
             {
                 checkpointIterator = 2;
-                std::cout << "Checkpoint 2/4" << std::endl;
+                checkpointPacket << "Checkpoint 2/4";
+                sf::Socket::Status status = udpSOCKET.send(checkpointPacket, serverIP, serverPort);
+                checkpointPacket.clear();
+                //std::cout << "Checkpoint 2/4" << std::endl;
             }
         }
         else if (checkpointIterator == 2)
@@ -265,7 +292,10 @@ int main()
             && car[0].y - offsetY >= 2940.0f - offsetY && car[0].y - offsetY <= 3420.0f - offsetY)
             {
                 checkpointIterator = 3;
-                std::cout << "Checkpoint 3/4" << std::endl;
+                checkpointPacket << "Checkpoint 3/4";
+                sf::Socket::Status status = udpSOCKET.send(checkpointPacket, serverIP, serverPort);
+                checkpointPacket.clear();
+                //std::cout << "Checkpoint 3/4" << std::endl;
             }
         }
         else if (checkpointIterator == 3)
@@ -275,10 +305,12 @@ int main()
             && car[0].y - offsetY >= 1760.0f - offsetY && car[0].y - offsetY <= 1800.0f - offsetY)
             {
                 checkpointIterator = 0;
-                std::cout << "Lap Completed" << std::endl;
+                checkpointPacket << "Lap Completed";
+                sf::Socket::Status status = udpSOCKET.send(checkpointPacket, serverIP, serverPort);
+                checkpointPacket.clear();
+                //std::cout << "Lap Completed" << std::endl;
             }
         }
-        // Victory condition
         app.display();
     }
 
